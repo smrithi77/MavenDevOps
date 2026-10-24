@@ -29,7 +29,7 @@ jobs:
       - name: Package Executable Distribution
         run: mvn package
 
-      - name: Upload Build Artifact for Verification
+      - name: Upload Build Artifact
         uses: actions/upload-artifact@v4
         with:
           name: production-ready-jar
@@ -37,15 +37,16 @@ jobs:
           retention-days: 5
 
   deploy-production:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     needs: build-and-validate
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Source Code
         uses: actions/checkout@v4
 
-      - name: Deploy to Production Environment
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and Deploy Production Container
         run: |
-          echo "CI tests passed. Deploying straight to Production automatically..."
-          docker --version
-          docker compose version
-          docker compose up -d --force-recreate
+          docker compose up -d --build --force-recreate
