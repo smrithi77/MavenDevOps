@@ -46,4 +46,6 @@ jobs:
       - name: Deploy to Production Environment
         run: |
           echo "CI tests passed. Deploying straight to Production automatically..."
-          docker-compose up -d --force-recreate
+          docker --version
+          docker compose version
+          docker compose up -d --force-recreate
